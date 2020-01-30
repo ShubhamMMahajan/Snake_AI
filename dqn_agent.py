@@ -9,6 +9,7 @@ import tensorflow as tf
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
+
 class Memory:
         def __init__(self, max_size):
                 self.buffer = deque(maxlen = max_size)

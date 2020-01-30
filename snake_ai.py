@@ -85,7 +85,8 @@ def gameLoop(e):
     directions = ["left", "right", "up", "down"]
     snake_List = [[x1, y1]]
     Length_of_snake = 1
-    checkpoints = [25, 50, 100, 200, 300, 400, 500]
+    checkpoints = [25, 50, 100, 200, 300, 400, 500, 750, 1000, 1250, 1500,
+                   1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000]
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
     print("episode:", e)
@@ -162,6 +163,8 @@ def gameLoop(e):
             Length_of_snake += 1
             #rint(snake_List)
         new_input_layer = make_array(snake_List, foodx, foody)
+        if Length_of_snake * 100 < run:
+            game_close = True
         agent.remember(input_layer, action, reward, new_input_layer, game_close)
         if e > batch_size:
             agent.replay(batch_size)
