@@ -45,18 +45,18 @@ def message(msg, color):
  
 def make_array(snake_List, foodx, foody):
     # 0 indicates empty space, 1 indicates snakes body, 2 indicates food
-    np_snake_array = np.array(snake_List)
-    snake_Head = snake_List[-1]
+    #np_snake_array = np.array(snake_List)
+    snake_Head = list(map(int, snake_List[-1]))
     input_layer = []
     input_layer.append(snake_Head[0] - foodx)
     input_layer.append(snake_Head[1] - foody)
     for x in range(snake_Head[0] - 20, snake_Head[0] + 30, 10):
-        for y in range(snake_Head[1] - 20, snake_Head[0] + 30, 10):
+        for y in range(snake_Head[1] - 20, snake_Head[1] + 30, 10):
             if [x,y] == snake_Head:
                 continue
-            else if [x, y] in snake_List:
+            elif [x, y] in snake_List:
                 input_layer.append(0)
-            else if [x, y] == [foodx, foody]:
+            elif [x, y] == [foodx, foody]:
                 input_layer.append(2)
             else:
                 input_layer.append(1)
