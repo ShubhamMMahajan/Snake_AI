@@ -42,10 +42,7 @@ class DQNAgent:
 
         def build_model(self):
                 model = keras.models.Sequential()
-                model.add(keras.layers.Dense(202, input_dim=self.state_size, activation='relu'))
-                model.add(keras.layers.Dense(100, activation='relu'))
-                model.add(keras.layers.Dense(50, activation='relu'))
-                model.add(keras.layers.Dense(25, activation='relu'))
+                model.add(keras.layers.Dense(22, input_dim=self.state_size, activation='relu'))
                 model.add(keras.layers.Dense(10, activation='relu'))
                 model.add(keras.layers.Dense(self.action_size, activation='linear'))
                 model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.learning_rate))

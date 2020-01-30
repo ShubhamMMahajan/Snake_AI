@@ -50,12 +50,12 @@ def make_array(snake_List, foodx, foody):
     input_layer = []
     input_layer.append(snake_Head[0] - foodx)
     input_layer.append(snake_Head[1] - foody)
-    if len(snake_List) >= 100:
+    if len(snake_List) >= 10:
         #get the last 100 positions the snake head has been
         #make the array a 1d array
-        input_layer.extend(list(np_snake_array[:-100].ravel()))
+        input_layer.extend(list(np_snake_array[:-10].ravel()))
     else:
-        for i in range(100):
+        for i in range(10):
             if i < len(snake_List):
                 input_layer.extend(snake_List[i])
             else:
@@ -63,10 +63,10 @@ def make_array(snake_List, foodx, foody):
     return input_layer
                     
 
-state_size = 202
+state_size = 22
 action_size = 4
-learning_rate = 0.1
-discount_rate = 0.95
+learning_rate = 0.7
+discount_rate = 0.2
 epsilon = 1.00
 epsilon_decay = 0.9999
 epsilon_min = 0.01
@@ -115,7 +115,7 @@ def gameLoop(e):
             #if event.type == pygame.QUIT:
             #    game_over = True
             #if event.type == pygame.KEYDOWN:
-        reward = -1
+        reward = -5
         action = agent.act(input_layer)
         if directions[action]== "left":
             x1_change = -snake_block
@@ -156,7 +156,7 @@ def gameLoop(e):
  
         pygame.display.update()
         if not game_close:
-            reward += (foodx - x1_old)**2 - (foodx - x1)**2 + (foody - y1_old)**2 - (foody - y1)**2
+            reward += 10 * ((foodx - x1_old)**2 - (foodx - x1)**2) + 10 * ((foody - y1_old)**2 - (foody - y1)**2)
         if x1 == foodx and y1 == foody:
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
