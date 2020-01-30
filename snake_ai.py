@@ -50,20 +50,20 @@ def make_array(snake_List, foodx, foody):
     input_layer = []
     input_layer.append(snake_Head[0] - foodx)
     input_layer.append(snake_Head[1] - foody)
-    if len(snake_List) >= 10:
-        #get the last 100 positions the snake head has been
-        #make the array a 1d array
-        input_layer.extend(list(np_snake_array[:-10].ravel()))
-    else:
-        for i in range(10):
-            if i < len(snake_List):
-                input_layer.extend(snake_List[i])
+    for x in range(snake_Head[0] - 20, snake_Head[0] + 30, 10):
+        for y in range(snake_Head[1] - 20, snake_Head[0] + 30, 10):
+            if [x,y] == snake_Head:
+                continue
+            else if [x, y] in snake_List:
+                input_layer.append(0)
+            else if [x, y] == [foodx, foody]:
+                input_layer.append(2)
             else:
-                input_layer.extend([0,0])
+                input_layer.append(1)
     return input_layer
                     
 
-state_size = 22
+state_size = 26
 action_size = 4
 learning_rate = 0.7
 discount_rate = 0.2
