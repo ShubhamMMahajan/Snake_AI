@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 from dqn_agent import DQNAgent
+import numpy as np
 
 pygame.init()
 pygame.display.init()
@@ -44,25 +45,32 @@ def message(msg, color):
  
 def make_array(snake_List, foodx, foody):
     # 0 indicates empty space, 1 indicates snakes body, 2 indicates food
-    board = []
-    for x in range(0, dis_width + 10, 10):
-        for y in range(0, dis_height + 10, 10):
-            if [x, y] in snake_List:
-                board.append(1)
-            elif x == foodx and y == foody:
-                board.append(2)
+    np_snake_array = np.array(snake_List)
+    snake_Head = snake_List[-1]
+    input_layer = []
+    input_layer.append(snake_Head[0] - foodx)
+    input_layer.append(snake_Head[1] - foody)
+    if len(snake_List) >= 100:
+        #get the last 100 positions the snake head has been
+        #make the array a 1d array
+        input_layer.extend(list(np_snake_array[:-100].ravel()))
+    else:
+        for i in range(100):
+            if i < len(snake_List):
+                input_layer.extend(snake_List[i])
             else:
-                board.append(0)
-    return board
+                input_layer.extend([0,0])
+    return input_layer
+                    
 
-state_size = 2501
+state_size = 202
 action_size = 4
 learning_rate = 0.1
 discount_rate = 0.95
 epsilon = 1.00
 epsilon_decay = 0.9999
 epsilon_min = 0.01
-batch_size = 25
+batch_size = 100
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
 def gameLoop(e):
@@ -83,7 +91,7 @@ def gameLoop(e):
     print("episode:", e)
     run = 0
     while not game_over:
-        board = make_array(snake_List, foodx, foody)
+        input_layer = make_array(snake_List, foodx, foody)
         #print(run)
         if game_close == True:
             if e in checkpoints:
@@ -107,7 +115,7 @@ def gameLoop(e):
             #    game_over = True
             #if event.type == pygame.KEYDOWN:
         reward = -1
-        action = agent.act(board)
+        action = agent.act(input_layer)
         if directions[action]== "left":
             x1_change = -snake_block
             y1_change = 0
@@ -153,8 +161,8 @@ def gameLoop(e):
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
             #rint(snake_List)
-        new_board = make_array(snake_List, foodx, foody)
-        agent.remember(board, action, reward, new_board, game_close)
+        new_input_layer = make_array(snake_List, foodx, foody)
+        agent.remember(input_layer, action, reward, new_input_layer, game_close)
         if e > batch_size:
             agent.replay(batch_size)
         clock.tick(snake_speed)
