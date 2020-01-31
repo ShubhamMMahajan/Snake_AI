@@ -22,7 +22,7 @@ pygame.display.set_caption('Snake Game by Edureka')
 clock = pygame.time.Clock()
  
 snake_block = 10
-snake_speed = 50
+snake_speed = 20
  
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
@@ -54,7 +54,8 @@ def make_array(snake_List, foodx, foody):
         for y in range(snake_Head[1] - 20, snake_Head[1] + 30, 10):
             if [x,y] == snake_Head:
                 continue
-            elif [x, y] in snake_List:
+            elif [x, y] in snake_List or x < 0 or x >= dis_width or \
+            y < 0 or y >= dis_height:
                 input_layer.append(0)
             elif [x, y] == [foodx, foody]:
                 input_layer.append(2)
@@ -65,12 +66,12 @@ def make_array(snake_List, foodx, foody):
 
 state_size = 26
 action_size = 4
-learning_rate = 0.7
-discount_rate = 0.2
+learning_rate = 0.1
+discount_rate = 0.5
 epsilon = 1.00
-epsilon_decay = 0.9999
+epsilon_decay = 0.99
 epsilon_min = 0.01
-batch_size = 100
+batch_size = 80
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
 def gameLoop(e):
@@ -89,8 +90,10 @@ def gameLoop(e):
                    1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000]
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
-    print("episode:", e)
+    print("episode:", e, "\t", "epsilon:", agent.epsilon)
     run = 0
+    if e > batch_size:
+        agent.replay(batch_size * 10)
     while not game_over:
         input_layer = make_array(snake_List, foodx, foody)
         #print(run)
@@ -156,18 +159,20 @@ def gameLoop(e):
  
         pygame.display.update()
         if not game_close:
-            reward += 10 * ((foodx - x1_old)**2 - (foodx - x1)**2) + 10 * ((foody - y1_old)**2 - (foody - y1)**2)
+            reward += 10 * (abs(foodx - x1_old) - abs(foodx - x1)) + 10 * (abs(foody - y1_old) - abs(foody - y1))
         if x1 == foodx and y1 == foody:
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
+            reward += 1000
             #rint(snake_List)
         new_input_layer = make_array(snake_List, foodx, foody)
+        #print("Reward: ", reward)
+        #time.sleep(1)
         if Length_of_snake * 100 < run:
             game_close = True
         agent.remember(input_layer, action, reward, new_input_layer, game_close)
-        if e > batch_size:
-            agent.replay(batch_size)
+        
         clock.tick(snake_speed)
         run += 1
         

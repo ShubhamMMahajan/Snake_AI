@@ -39,13 +39,14 @@ class DQNAgent:
                 self.epsilon_min = epsilon_min
                 self.epsilon_decay = epsilon_decay
                 self.model = self.build_model()
+                self.actions = ["left", "right", "up", "down"]
 
         def build_model(self):
                 model = keras.models.Sequential()
                 model.add(keras.layers.Dense(26, input_dim=self.state_size, activation='relu'))
                 model.add(keras.layers.Dense(12, activation='relu'))
-                model.add(keras.layers.Dense(self.action_size, activation='linear'))
-                model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.learning_rate))
+                model.add(keras.layers.Dense(self.action_size, activation='softmax'))
+                model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.learning_rate), metrics=['mae'])
                 return model
 
         def remember(self, state, action, reward, next_state, done):
@@ -57,8 +58,9 @@ class DQNAgent:
                                 print("Random Action...")
                         #print("Random Action....: ")
                         return random.randrange(self.action_size)
+                
                 print("Action Rewards: ", self.model.predict(np.reshape(state, (1, self.state_size)))[0])
-                print("Calculated Action: ")
+                print("Calculated Action: ", self.actions[np.argmax(self.model.predict(np.reshape(state, (1, self.state_size)))[0])])
                 return np.argmax(self.model.predict(np.reshape(state, (1, self.state_size)))[0])
 
         def replay(self, batch_size):
