@@ -43,10 +43,10 @@ class DQNAgent:
 
         def build_model(self):
                 model = keras.models.Sequential()
-                model.add(keras.layers.Dense(26, input_dim=self.state_size, activation='relu'))
-                model.add(keras.layers.Dense(12, activation='relu'))
+                model.add(keras.layers.Dense(6, input_dim=self.state_size, activation='relu'))
+                model.add(keras.layers.Dense(6, activation='relu'))
                 model.add(keras.layers.Dense(self.action_size, activation='softmax'))
-                model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.learning_rate), metrics=['mae'])
+                model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(lr=self.learning_rate))
                 return model
 
         def remember(self, state, action, reward, next_state, done):

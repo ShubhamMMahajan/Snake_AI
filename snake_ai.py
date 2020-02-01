@@ -3,6 +3,8 @@ import time
 import random
 from dqn_agent import DQNAgent
 import numpy as np
+from math import sqrt
+
 
 pygame.init()
 pygame.display.init()
@@ -48,11 +50,25 @@ def make_array(snake_List, foodx, foody):
     #np_snake_array = np.array(snake_List)
     snake_Head = list(map(int, snake_List[-1]))
     input_layer = []
-    input_layer.append(snake_Head[0] - foodx)
-    input_layer.append(snake_Head[1] - foody)
-    for x in range(snake_Head[0] - 20, snake_Head[0] + 30, 10):
-        for y in range(snake_Head[1] - 20, snake_Head[1] + 30, 10):
+    if snake_Head[0] > foodx:
+        input_layer.append(0)
+    elif snake_Head[0] < foodx:
+        input_layer.append(1)
+    else:
+        input_layer.append(2)
+
+    if snake_Head[1] > foody:
+        input_layer.append(0)
+    elif snake_Head[1] < foody:
+        input_layer.append(1)
+    else:
+        input_layer.append(2)
+    
+    for x in range(snake_Head[0] - 10, snake_Head[0] + 20, 10):
+        for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
             if [x,y] == snake_Head:
+                continue
+            elif x != snake_Head[0] and y != snake_Head[1]:
                 continue
             elif [x, y] in snake_List or x < 0 or x >= dis_width or \
             y < 0 or y >= dis_height:
@@ -64,16 +80,17 @@ def make_array(snake_List, foodx, foody):
     return input_layer
                     
 
-state_size = 26
+state_size = 6
 action_size = 4
-learning_rate = 0.1
-discount_rate = 0.5
+learning_rate = 0.005
+discount_rate = 0.3
 epsilon = 1.00
 epsilon_decay = 0.99
 epsilon_min = 0.01
-batch_size = 80
+batch_size = 40
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
+reward = -5
 def gameLoop(e):
     game_over = False
     game_close = False
@@ -90,8 +107,9 @@ def gameLoop(e):
                    1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000]
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
-    print("episode:", e, "\t", "epsilon:", agent.epsilon)
     run = 0
+    print("episode:", e, "\t", "epsilon:", agent.epsilon, "\t", "reward:", reward)
+    reward = 0
     if e > batch_size:
         agent.replay(batch_size * 10)
     while not game_over:
@@ -118,7 +136,6 @@ def gameLoop(e):
             #if event.type == pygame.QUIT:
             #    game_over = True
             #if event.type == pygame.KEYDOWN:
-        reward = -5
         action = agent.act(input_layer)
         if directions[action]== "left":
             x1_change = -snake_block
@@ -132,7 +149,7 @@ def gameLoop(e):
         elif directions[action]== "down":
             y1_change = snake_block
             x1_change = 0
- 
+        reward -= 5
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             reward -= 1000
             game_close = True
@@ -159,7 +176,7 @@ def gameLoop(e):
  
         pygame.display.update()
         if not game_close:
-            reward += 10 * (abs(foodx - x1_old) - abs(foodx - x1)) + 10 * (abs(foody - y1_old) - abs(foody - y1))
+            reward += 100 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
         if x1 == foodx and y1 == foody:
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
