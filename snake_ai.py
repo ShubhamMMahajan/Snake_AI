@@ -24,7 +24,7 @@ pygame.display.set_caption('Snake Game by Edureka')
 clock = pygame.time.Clock()
  
 snake_block = 10
-snake_speed = 20
+snake_speed = 40
  
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
@@ -50,19 +50,45 @@ def make_array(snake_List, foodx, foody):
     #np_snake_array = np.array(snake_List)
     snake_Head = list(map(int, snake_List[-1]))
     input_layer = []
-    if snake_Head[0] > foodx:
-        input_layer.append(0)
-    elif snake_Head[0] < foodx:
-        input_layer.append(1)
+##    if snake_Head[0] > foodx:
+##        input_layer.append(0)
+##    elif snake_Head[0] < foodx:
+##        input_layer.append(1)
+##    else:
+##        input_layer.append(2)
+##
+##    if snake_Head[1] > foody:
+##        input_layer.append(0)
+##    elif snake_Head[1] < foody:
+##        input_layer.append(1)
+##    else:
+##        input_layer.append(2)
+##    input_layer.append(foodx-snake_Head[0])
+##    input_layer.append(foody-snake_Head[1])
+    if snake_Head[0] > foodx: #food is left of the snake
+        input_layer.append(1 if foody < snake_Head[1] else 0)
+        input_layer.append(1 if foody == snake_Head[1] else 0)
+        input_layer.append(1 if foody > snake_Head[1] else 0)
     else:
-        input_layer.append(2)
-
-    if snake_Head[1] > foody:
         input_layer.append(0)
-    elif snake_Head[1] < foody:
-        input_layer.append(1)
+        input_layer.append(0)
+        input_layer.append(0)
+        
+    if snake_Head[0] == foodx: 
+        input_layer.append(1 if foody < snake_Head[1] else 0)
+        input_layer.append(1 if foody > snake_Head[1] else 0)
     else:
-        input_layer.append(2)
+        input_layer.append(0)
+        input_layer.append(0)
+    
+    if snake_Head[0] < foodx:
+        input_layer.append(1 if foody < snake_Head[1] else 0)
+        input_layer.append(1 if foody == snake_Head[1] else 0)
+        input_layer.append(1 if foody > snake_Head[1] else 0)
+    else:
+        input_layer.append(0)
+        input_layer.append(0)
+        input_layer.append(0)
     
     for x in range(snake_Head[0] - 10, snake_Head[0] + 20, 10):
         for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
@@ -73,24 +99,22 @@ def make_array(snake_List, foodx, foody):
             elif [x, y] in snake_List or x < 0 or x >= dis_width or \
             y < 0 or y >= dis_height:
                 input_layer.append(0)
-            elif [x, y] == [foodx, foody]:
-                input_layer.append(2)
             else:
                 input_layer.append(1)
     return input_layer
                     
 
-state_size = 6
+state_size = 12
 action_size = 4
-learning_rate = 0.005
-discount_rate = 0.3
+learning_rate = 1 * 10**-4
+discount_rate = 0.95
 epsilon = 1.00
-epsilon_decay = 0.99
+epsilon_decay = 0.999
 epsilon_min = 0.01
-batch_size = 40
+batch_size = 200
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
-reward = -5
+
 def gameLoop(e):
     game_over = False
     game_close = False
@@ -108,16 +132,17 @@ def gameLoop(e):
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
     run = 0
-    print("episode:", e, "\t", "epsilon:", agent.epsilon, "\t", "reward:", reward)
+    
     reward = 0
     if e > batch_size:
-        agent.replay(batch_size * 10)
+        agent.replay(batch_size * 20)
     while not game_over:
         input_layer = make_array(snake_List, foodx, foody)
         #print(run)
         if game_close == True:
             if e in checkpoints:
                 agent.save('./models/model_{}'.format(e))
+            print("episode:", e, "\t", "epsilon:", agent.epsilon, "\t", "reward:", reward)
             gameLoop(e)
 #             dis.fill(blue)
 #             message("You Lost! Press C-Play Again or Q-Quit", red)
@@ -149,9 +174,9 @@ def gameLoop(e):
         elif directions[action]== "down":
             y1_change = snake_block
             x1_change = 0
-        reward -= 5
+        reward -= 1
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            reward -= 1000
+            reward -= 10
             game_close = True
         x1_old = x1
         y1_old = y1
@@ -168,7 +193,7 @@ def gameLoop(e):
  
         for x in snake_List[:-1]:
             if x == snake_Head:
-                reward -= 1000
+                reward -= 10
                 game_close = True
  
         our_snake(snake_block, snake_List)
@@ -176,14 +201,16 @@ def gameLoop(e):
  
         pygame.display.update()
         if not game_close:
-            reward += 100 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
+            reward += 2 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
         if x1 == foodx and y1 == foody:
+            new_input_layer = make_array(snake_List, foodx, foody)
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
-            reward += 1000
+            reward += 10
             #rint(snake_List)
-        new_input_layer = make_array(snake_List, foodx, foody)
+        else:
+            new_input_layer = make_array(snake_List, foodx, foody)
         #print("Reward: ", reward)
         #time.sleep(1)
         if Length_of_snake * 100 < run:
