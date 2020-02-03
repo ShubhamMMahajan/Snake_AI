@@ -32,7 +32,7 @@ class DQNAgent:
         def __init__(self, state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay):
                 self.state_size = state_size
                 self.action_size = action_size
-                self.memory = Memory(16000)
+                self.memory = Memory(1000000)
                 self.learning_rate = learning_rate
                 self.discount_rate = discount_rate
                 self.epsilon = epsilon
@@ -43,8 +43,8 @@ class DQNAgent:
 
         def build_model(self):
                 model = keras.models.Sequential()
-                model.add(keras.layers.Dense(12, input_dim=self.state_size, activation='relu'))
-                model.add(keras.layers.Dense(6, activation='relu'))
+                model.add(keras.layers.Dense(48, input_dim=self.state_size, activation='relu'))
+                model.add(keras.layers.Dense(20, activation='relu'))
                 model.add(keras.layers.Dense(self.action_size, activation='softmax'))
                 model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.learning_rate))
                 return model

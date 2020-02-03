@@ -65,60 +65,62 @@ def make_array(snake_List, foodx, foody):
 ##        input_layer.append(2)
 ##    input_layer.append(foodx-snake_Head[0])
 ##    input_layer.append(foody-snake_Head[1])
-    if snake_Head[0] > foodx: #food is left of the snake
-        input_layer.append(1 if foody < snake_Head[1] else 0)
-        input_layer.append(1 if foody == snake_Head[1] else 0)
-        input_layer.append(1 if foody > snake_Head[1] else 0)
-    else:
-        input_layer.append(0)
-        input_layer.append(0)
-        input_layer.append(0)
-        
-    if snake_Head[0] == foodx: 
-        input_layer.append(1 if foody < snake_Head[1] else 0)
-        input_layer.append(1 if foody > snake_Head[1] else 0)
-    else:
-        input_layer.append(0)
-        input_layer.append(0)
+##    if snake_Head[0] > foodx: #food is left of the snake
+##        input_layer.append(1 if foody < snake_Head[1] else 0)
+##        input_layer.append(1 if foody == snake_Head[1] else 0)
+##        input_layer.append(1 if foody > snake_Head[1] else 0)
+##    else:
+##        input_layer.append(0)
+##        input_layer.append(0)
+##        input_layer.append(0)
+##        
+##    if snake_Head[0] == foodx: 
+##        input_layer.append(1 if foody < snake_Head[1] else 0)
+##        input_layer.append(1 if foody > snake_Head[1] else 0)
+##    else:
+##        input_layer.append(0)
+##        input_layer.append(0)
+##    
+##    if snake_Head[0] < foodx:
+##        input_layer.append(1 if foody < snake_Head[1] else 0)
+##        input_layer.append(1 if foody == snake_Head[1] else 0)
+##        input_layer.append(1 if foody > snake_Head[1] else 0)
+##    else:
+##        input_layer.append(0)
+##        input_layer.append(0)
+##        input_layer.append(0)
     
-    if snake_Head[0] < foodx:
-        input_layer.append(1 if foody < snake_Head[1] else 0)
-        input_layer.append(1 if foody == snake_Head[1] else 0)
-        input_layer.append(1 if foody > snake_Head[1] else 0)
-    else:
-        input_layer.append(0)
-        input_layer.append(0)
-        input_layer.append(0)
-    
-    for x in range(snake_Head[0] - 10, snake_Head[0] + 20, 10):
-        for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
+    for x in range(snake_Head[0] - 30, snake_Head[0] + 40, 10):
+        for y in range(snake_Head[1] - 30, snake_Head[1] + 40, 10):
             if [x,y] == snake_Head:
                 continue
-            elif x != snake_Head[0] and y != snake_Head[1]:
-                continue
+            #elif x != snake_Head[0] and y != snake_Head[1]:
+            #    continue
             elif [x, y] in snake_List or x < 0 or x >= dis_width or \
             y < 0 or y >= dis_height:
                 input_layer.append(0)
+            elif x == foodx and y == foody:
+                input_layer.append(2)
             else:
                 input_layer.append(1)
     return input_layer
                     
 
-state_size = 12
+state_size = 48
 action_size = 4
 learning_rate = 1 * 10**-4
 discount_rate = 0.95
 epsilon = 1.00
 epsilon_decay = 0.999
 epsilon_min = 0.01
-batch_size = 200
+batch_size = 400
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
 
 def gameLoop(e):
     game_over = False
     game_close = False
-    e = e + 1
+    #e = e + 1
     x1 = dis_width / 2
     y1 = dis_height / 2
  
@@ -128,14 +130,16 @@ def gameLoop(e):
     snake_List = [[x1, y1]]
     Length_of_snake = 1
     checkpoints = [25, 50, 100, 200, 300, 400, 500, 750, 1000, 1250, 1500,
-                   1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000]
+                   1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000,
+                   4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500,
+                   6750, 7000, 7250, 7500, 7750, 8000, 8250, 8500, 8750, 9000]
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
     run = 0
     
     reward = 0
     if e > batch_size:
-        agent.replay(batch_size * 20)
+        agent.replay(batch_size * 200)
     while not game_over:
         input_layer = make_array(snake_List, foodx, foody)
         #print(run)
@@ -143,7 +147,7 @@ def gameLoop(e):
             if e in checkpoints:
                 agent.save('./models/model_{}'.format(e))
             print("episode:", e, "\t", "epsilon:", agent.epsilon, "\t", "reward:", reward)
-            gameLoop(e)
+            break
 #             dis.fill(blue)
 #             message("You Lost! Press C-Play Again or Q-Quit", red)
 #             Your_score(Length_of_snake - 1)
@@ -200,8 +204,8 @@ def gameLoop(e):
         Your_score(Length_of_snake - 1)
  
         pygame.display.update()
-        if not game_close:
-            reward += 2 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
+        #if not game_close:
+        #    reward += 2 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
         if x1 == foodx and y1 == foody:
             new_input_layer = make_array(snake_List, foodx, foody)
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
@@ -213,14 +217,16 @@ def gameLoop(e):
             new_input_layer = make_array(snake_List, foodx, foody)
         #print("Reward: ", reward)
         #time.sleep(1)
-        if Length_of_snake * 100 < run:
-            game_close = True
+        #if Length_of_snake * 100 < run:
+        #    game_close = True
         agent.remember(input_layer, action, reward, new_input_layer, game_close)
         
         clock.tick(snake_speed)
         run += 1
         
-    pygame.quit()
-    quit()
-e = 0 
-gameLoop(e)
+    #pygame.quit()
+    #quit()
+e = 0
+while True:
+    e += 1 
+    gameLoop(e)
