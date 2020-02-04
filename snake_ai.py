@@ -113,7 +113,7 @@ discount_rate = 0.95
 epsilon = 1.00
 epsilon_decay = 0.999
 epsilon_min = 0.01
-batch_size = 400
+batch_size = 200
 agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
 
@@ -139,7 +139,7 @@ def gameLoop(e):
     
     reward = 0
     if e > batch_size:
-        agent.replay(batch_size * 200)
+        agent.replay(batch_size * 100)
     while not game_over:
         input_layer = make_array(snake_List, foodx, foody)
         #print(run)
