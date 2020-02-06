@@ -90,8 +90,8 @@ def make_array(snake_List, foodx, foody):
 ##        input_layer.append(0)
 ##        input_layer.append(0)
     
-    for x in range(snake_Head[0] - 10, snake_Head[0] + 20, 10):
-        for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
+    for x in range(snake_Head[0] - 30, snake_Head[0] + 40, 10):
+        for y in range(snake_Head[1] - 30, snake_Head[1] + 40, 10):
             if [x,y] == snake_Head:
                 continue
             #elif x != snake_Head[0] and y != snake_Head[1]:
@@ -99,85 +99,23 @@ def make_array(snake_List, foodx, foody):
             elif [x, y] in snake_List or x < 0 or x >= dis_width or \
             y < 0 or y >= dis_height:
                 input_layer.append(0)
+            elif x == foodx and y == foody:
+                input_layer.append(2)
             else:
                 input_layer.append(1)
-    if snake_Head[0] > foodx:
-        input_layer.append(-1)
-    elif snake_Head[0] < foodx:
-        input_layer.append(1)
-    else:
-        input_layer.append(0)
-
-    if snake_Head[1] > foody:
-        input_layer.append(-1)
-    elif snake_Head[1] < foody:
-        input_layer.append(1)
-    else:
-        input_layer.append(0)
-    
     return input_layer
                     
 
+state_size = 48
+action_size = 4
+learning_rate = 1 * 10**-4
+discount_rate = 0.95
+epsilon = 1.00
+epsilon_decay = 0.999
+epsilon_min = 0.01
+batch_size = 200
+agent = DQNAgent(state_size, action_size, learning_rate, discount_rate, epsilon, epsilon_min, epsilon_decay)
 
-from Feed_Forward_Neural_Network import *
-
-def run_game_with_ML(display, clock, weights):
-    max_score = 0
-    avg_score = 0
-    test_games = 1
-    score1 = 0
-    steps_per_game = 2500
-    score2 = 0
-
-    for _ in range(test_games):
-        snake_start, snake_position, apple_position, score = starting_positions()
-
-        count_same_direction = 0
-        prev_direction = 0
-
-        for _ in range(steps_per_game):
-            predictions = []
-            predicted_direction = np.argmax(np.array(forward_propagation(np.array(
-                [is_left_blocked, is_front_blocked, is_right_blocked, apple_direction_vector_normalized[0],
-                 snake_direction_vector_normalized[0], apple_direction_vector_normalized[1],
-                 snake_direction_vector_normalized[1]]).reshape(-1, 7), weights))) - 1
-
-            if predicted_direction == prev_direction:
-                count_same_direction += 1
-            else:
-                count_same_direction = 0
-                prev_direction = predicted_direction
-
-            new_direction = np.array(snake_position[0]) - np.array(snake_position[1])
-            if predicted_direction == -1:
-                new_direction = np.array([new_direction[1], -new_direction[0]])
-            if predicted_direction == 1:
-                new_direction = np.array([-new_direction[1], new_direction[0]])
-
-            button_direction = generate_button_direction(new_direction)
-
-            next_step = snake_position[0] + current_direction_vector
-            if collision_with_boundaries(snake_position[0]) == 1 or collision_with_self(next_step.tolist(),
-                                                                                        snake_position) == 1:
-                score1 += -150
-                break
-
-            else:
-                score1 += 0
-
-            snake_position, apple_position, score = play_game(snake_start, snake_position, apple_position,
-                                                              button_direction, score, display, clock)
-
-            if score > max_score:
-                max_score = score
-
-            if count_same_direction > 8 and predicted_direction != 0:
-                score2 -= 1
-            else:
-                score2 += 2
-
-
-    return score1 + score2 + max_score * 5000
 
 def gameLoop(e):
     game_over = False
