@@ -182,6 +182,7 @@ from Feed_Forward_Neural_Network import *
 
 def run_game_with_ML(weights):
     game_close = False
+    steps_taken = 0
     
     x1 = dis_width / 2
     y1 = dis_height / 2
@@ -239,6 +240,12 @@ def run_game_with_ML(weights):
             if x == snake_Head:
                 score1 -= 150
                 game_close = True
+        
+        if count_same_direction > 8 and prev_direction != directions[action]:
+            score2 -= 1
+        else:
+            score2 += 2
+        
         if prev_direction == directions[action]:
             count_same_direction += 1
 
@@ -258,10 +265,8 @@ def run_game_with_ML(weights):
         
         
         clock.tick(snake_speed)
-        
-    #pygame.quit()
-    #quit()
-e = 0
-while True:
-    e += 1 
-    gameLoop(e)
+        if steps_taken >= steps_per_game:
+            game_close = True
+            
+    return score1 + score2 + Length_of_snake * 5000
+    
