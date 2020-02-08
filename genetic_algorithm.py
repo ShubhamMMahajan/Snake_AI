@@ -5,7 +5,7 @@ def cal_pop_fitness(pop):
     # calculating the fitness value by playing a game with the given weights in chromosome
     fitness = []
     for i in range(pop.shape[0]):
-        fit = run_game_with_ML(display,clock,pop[i])
+        fit = run_game_with_ML(pop[i])
         print('fitness value of chromosome '+ str(i) +' :  ', fit)
         fitness.append(fit)
     return np.array(fitness)

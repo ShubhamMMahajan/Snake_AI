@@ -121,113 +121,89 @@ def make_array(snake_List, foodx, foody):
 
 from Feed_Forward_Neural_Network import *
 
-def run_game_with_ML(display, clock, weights):
-    max_score = 0
-    avg_score = 0
-    test_games = 1
-    score1 = 0
-    steps_per_game = 2500
-    score2 = 0
+##def run_game_with_ML(weights):
+##    max_score = 0
+##    avg_score = 0
+##    test_games = 1
+##    score1 = 0
+##    steps_per_game = 2500
+##    score2 = 0
+##    directions = ["left", "right", "up", "down"]
+##    
+##    for _ in range(test_games):
+##        snake_start, snake_position, apple_position, score = starting_positions()
+##
+##        count_same_direction = 0
+##        prev_direction = 0
+##
+##        for _ in range(steps_per_game):
+##            predictions = []
+##            predicted_direction = np.argmax(np.array(forward_propagation(np.array(
+##                make_array(snake_list, foodx, foody).reshape(-1, 7), weights)))
+##            print("predicted_direction:", predicted_direction)
+##            
+####            if predicted_direction == prev_direction:
+####                count_same_direction += 1
+####            else:
+####                count_same_direction = 0
+####                prev_direction = predicted_direction
+####
+####            new_direction = np.array(snake_position[0]) - np.array(snake_position[1])
+####            if predicted_direction == -1:
+####                new_direction = np.array([new_direction[1], -new_direction[0]])
+####            if predicted_direction == 1:
+####                new_direction = np.array([-new_direction[1], new_direction[0]])
+####
+####            button_direction = generate_button_direction(new_direction)
+####
+####            next_step = snake_position[0] + current_direction_vector
+##            next_step = directions[predicted_direction]
+##            if collision_with_boundaries(snake_position[0]) == 1 or collision_with_self(next_step.tolist(),
+##                                                                                        snake_position) == 1:
+##                score1 += -150
+##                break
+##
+##            else:
+##                score1 += 0
+##
+##            snake_position, apple_position, score = play_game(snake_start, snake_position, apple_position,
+##                                                              button_direction, score, display, clock)
+##
+##            if score > max_score:
+##                max_score = score
+##
+##            if count_same_direction > 8 and predicted_direction != 0:
+##                score2 -= 1
+##            else:
+##                score2 += 2
+##
+##
+##    return score1 + score2 + max_score * 5000
 
-    for _ in range(test_games):
-        snake_start, snake_position, apple_position, score = starting_positions()
-
-        count_same_direction = 0
-        prev_direction = 0
-
-        for _ in range(steps_per_game):
-            predictions = []
-            predicted_direction = np.argmax(np.array(forward_propagation(np.array(
-                [is_left_blocked, is_front_blocked, is_right_blocked, apple_direction_vector_normalized[0],
-                 snake_direction_vector_normalized[0], apple_direction_vector_normalized[1],
-                 snake_direction_vector_normalized[1]]).reshape(-1, 7), weights))) - 1
-
-            if predicted_direction == prev_direction:
-                count_same_direction += 1
-            else:
-                count_same_direction = 0
-                prev_direction = predicted_direction
-
-            new_direction = np.array(snake_position[0]) - np.array(snake_position[1])
-            if predicted_direction == -1:
-                new_direction = np.array([new_direction[1], -new_direction[0]])
-            if predicted_direction == 1:
-                new_direction = np.array([-new_direction[1], new_direction[0]])
-
-            button_direction = generate_button_direction(new_direction)
-
-            next_step = snake_position[0] + current_direction_vector
-            if collision_with_boundaries(snake_position[0]) == 1 or collision_with_self(next_step.tolist(),
-                                                                                        snake_position) == 1:
-                score1 += -150
-                break
-
-            else:
-                score1 += 0
-
-            snake_position, apple_position, score = play_game(snake_start, snake_position, apple_position,
-                                                              button_direction, score, display, clock)
-
-            if score > max_score:
-                max_score = score
-
-            if count_same_direction > 8 and predicted_direction != 0:
-                score2 -= 1
-            else:
-                score2 += 2
-
-
-    return score1 + score2 + max_score * 5000
-
-def gameLoop(e):
-    game_over = False
+def run_game_with_ML(weights):
     game_close = False
-    #e = e + 1
+    
     x1 = dis_width / 2
     y1 = dis_height / 2
  
     x1_change = 0
     y1_change = 0
     directions = ["left", "right", "up", "down"]
+    
     snake_List = [[x1, y1]]
     Length_of_snake = 1
-    checkpoints = [25, 50, 100, 200, 300, 400, 500, 750, 1000, 1250, 1500,
-                   1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000,
-                   4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500,
-                   6750, 7000, 7250, 7500, 7750, 8000, 8250, 8500, 8750, 9000]
+    
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
-    run = 0
+
+    prev_direction = ""
+    count_same_direction = 0
     
-    reward = 0
-    if e > batch_size:
-        agent.replay(batch_size * 100)
-    while not game_over:
-        input_layer = make_array(snake_List, foodx, foody)
-        #print(run)
-        if game_close == True:
-            if e in checkpoints:
-                agent.save('./models/model_{}'.format(e))
-            print("episode:", e, "\t", "epsilon:", agent.epsilon, "\t", "reward:", reward)
-            break
-#             dis.fill(blue)
-#             message("You Lost! Press C-Play Again or Q-Quit", red)
-#             Your_score(Length_of_snake - 1)
-#             pygame.display.update()
- 
-#             for event in pygame.event.get():
-#                 if event.type == pygame.KEYDOWN:
-#                     if event.key == pygame.K_q:
-#                         game_over = True
-#                         game_close = False
-#                     if event.key == pygame.K_c:
-#                         gameLoop()
- 
-        #for event in pygame.event.get():
-            #if event.type == pygame.QUIT:
-            #    game_over = True
-            #if event.type == pygame.KEYDOWN:
-        action = agent.act(input_layer)
+    score1 = 0
+    steps_per_game = 2500
+    score2 = 0
+    while not game_close:
+        action = np.argmax(np.array(forward_propagation(np.array(make_array(snake_list, foodx, foody).reshape(-1, 7), weights))))
         if directions[action]== "left":
             x1_change = -snake_block
             y1_change = 0
@@ -240,9 +216,11 @@ def gameLoop(e):
         elif directions[action]== "down":
             y1_change = snake_block
             x1_change = 0
-        reward -= 1
+
+        
+        
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            reward -= 10
+            score1 -= 150
             game_close = True
         x1_old = x1
         y1_old = y1
@@ -259,32 +237,27 @@ def gameLoop(e):
  
         for x in snake_List[:-1]:
             if x == snake_Head:
-                reward -= 10
+                score1 -= 150
                 game_close = True
- 
+        if prev_direction == directions[action]:
+            count_same_direction += 1
+
+        else:
+            prev_direction = directions[actions]
+            count_same_direction = 0
+                           
+        
         our_snake(snake_block, snake_List)
         Your_score(Length_of_snake - 1)
  
         pygame.display.update()
-        #if not game_close:
-        #    reward += 2 * (sqrt((foodx - x1_old)**2 + (foody - y1_old)**2) - sqrt((foodx - x1)**2 + (foody - y1)**2))
-        if x1 == foodx and y1 == foody:
-            new_input_layer = make_array(snake_List, foodx, foody)
+        if x1 == foodx and y1 == foody: 
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
-            reward += 10
-            #rint(snake_List)
-        else:
-            new_input_layer = make_array(snake_List, foodx, foody)
-        #print("Reward: ", reward)
-        #time.sleep(1)
-        #if Length_of_snake * 100 < run:
-        #    game_close = True
-        agent.remember(input_layer, action, reward, new_input_layer, game_close)
+        
         
         clock.tick(snake_speed)
-        run += 1
         
     #pygame.quit()
     #quit()
