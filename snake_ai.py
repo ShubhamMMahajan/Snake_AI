@@ -94,8 +94,8 @@ def make_array(snake_List, foodx, foody):
         for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
             if [x,y] == snake_Head:
                 continue
-            #elif x != snake_Head[0] and y != snake_Head[1]:
-            #    continue
+            elif x != snake_Head[0] and y != snake_Head[1]:
+                continue
             elif [x, y] in snake_List or x < 0 or x >= dis_width or \
             y < 0 or y >= dis_height:
                 input_layer.append(0)
@@ -119,7 +119,7 @@ def make_array(snake_List, foodx, foody):
                     
 
 
-from Feed_Forward_Neural_Network import *
+from feed_forward_neural_network import *
 
 ##def run_game_with_ML(weights):
 ##    max_score = 0
@@ -204,7 +204,7 @@ def run_game_with_ML(weights):
     steps_per_game = 2500
     score2 = 0
     while not game_close:
-        action = np.argmax(np.array(forward_propagation(np.array(make_array(snake_list, foodx, foody).reshape(-1, 7), weights))))
+        action = np.argmax(np.array(forward_propagation(np.array(make_array(snake_List, foodx, foody)).reshape(-1, 6), weights)))
         if directions[action]== "left":
             x1_change = -snake_block
             y1_change = 0
@@ -250,7 +250,7 @@ def run_game_with_ML(weights):
             count_same_direction += 1
 
         else:
-            prev_direction = directions[actions]
+            prev_direction = directions[action]
             count_same_direction = 0
                            
         

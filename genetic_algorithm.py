@@ -1,4 +1,4 @@
-from Run_Game import *
+from snake_ai import *
 from random import choice, randint
 
 def cal_pop_fitness(pop):
