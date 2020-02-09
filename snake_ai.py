@@ -184,14 +184,23 @@ def make_array(snake_List, foodx, foody):
 ##
 ##    return score1 + score2 + max_score * 5000
 
+def opposite_direction(prev_direction, current_direction):
+    if (prev_direction == "left" and current_direction == "right") or \
+       (prev_direction == "right" and current_direction == "left"):
+           return True
+    if (prev_direction == "down" and current_direction == "up") or \
+       (prev_direction == "up" and current_direction == "down"):
+           return True
+    return False
+
 def run_game_with_ML(weights):
     game_close = False
     steps_taken = 0
 
     
     
-    x1 = dis_width / 2
-    y1 = dis_height / 2
+    x1 = int(dis_width / 2)
+    y1 = int(dis_height / 2)
  
     x1_change = 0
     y1_change = 0
@@ -210,7 +219,8 @@ def run_game_with_ML(weights):
     steps_per_game = 100
     score2 = 0
     while not game_close:
-        action = np.argmax(np.array(forward_propagation(np.array(make_array(snake_List, foodx, foody)).reshape(-1, 6), weights)))
+        input_layer = make_array(snake_List, foodx, foody)
+        action = np.argmax(np.array(forward_propagation(np.array(input_layer).reshape(-1, 6), weights)))
         if directions[action]== "left":
             x1_change = -snake_block
             y1_change = 0
@@ -227,7 +237,7 @@ def run_game_with_ML(weights):
         
         
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            score1 -= 150
+            score1 -= 200
             game_close = True
         x1_old = x1
         y1_old = y1
@@ -240,15 +250,17 @@ def run_game_with_ML(weights):
         snake_Head.append(x1)
         snake_Head.append(y1)
         snake_List.append(snake_Head)
+
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                score1 -= 200
+                game_close = True
+        score1 -= 1       
         if len(snake_List) > Length_of_snake:
             del snake_List[0]
  
-        for x in snake_List[:-1]:
-            if x == snake_Head:
-                score1 -= 150
-                game_close = True
-        
-        if count_same_direction > 8 and prev_direction != directions[action]:
+        if (count_same_direction > 4 and prev_direction != directions[action]) or \
+            opposite_direction(prev_direction, directions[action]):
             score2 -= 1
         else:
             score2 += 2
@@ -259,7 +271,6 @@ def run_game_with_ML(weights):
         else:
             prev_direction = directions[action]
             count_same_direction = 0
-                           
         
         our_snake(snake_block, snake_List)
         Your_score(Length_of_snake - 1)
@@ -272,8 +283,8 @@ def run_game_with_ML(weights):
         
         steps_taken += 1
         clock.tick(snake_speed)
-        if steps_taken >= steps_per_game:
+        if steps_taken >= steps_per_game * Length_of_snake:
             game_close = True
-        print(steps_taken)
+
     return score1 + score2 + Length_of_snake * 5000
     

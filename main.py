@@ -27,7 +27,8 @@ for generation in range(num_generations):
     print('##############        GENERATION ' + str(generation)+ '  ###############' )
     # Measuring the fitness of each chromosome in the population.
     fitness = cal_pop_fitness(new_population)
-    print('#######  fittest chromosome in gneneration ' + str(generation) +' is having fitness value:  ', np.max(fitness))
+    print('#######  fittest chromosome in generation ' + str(generation) +' is having fitness value:  ', np.max(fitness))
+    print('#######  average chromosome in generation ' + str(generation) +' is having fitness value:  ', np.mean(fitness))
     # Selecting the best parents in the population for mating.
     parents = select_mating_pool(new_population, fitness, num_parents_mating)
 
