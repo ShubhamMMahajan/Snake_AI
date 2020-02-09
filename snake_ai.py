@@ -1,9 +1,10 @@
 import pygame
 import time
 import random
-from dqn_agent import DQNAgent
 import numpy as np
 from math import sqrt
+
+from feed_forward_neural_network import *
 
 
 pygame.init()
@@ -14,25 +15,28 @@ black = (0, 0, 0)
 red = (213, 50, 80)
 green = (0, 255, 0)
 blue = (50, 153, 213)
+tangerine = (255, 153, 102)
  
-dis_width = 600
-dis_height = 400
+dis_width = 100
+dis_height = 100
+
+dis_height_complete = dis_height + 30
  
-dis = pygame.display.set_mode((dis_width, dis_height))
+dis = pygame.display.set_mode((dis_width, dis_height_complete))
 pygame.display.set_caption('Snake Game by Edureka')
  
 clock = pygame.time.Clock()
  
 snake_block = 10
-snake_speed = 40
+snake_speed = 20
  
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
  
  
 def Your_score(score):
-    value = score_font.render("Your Score: " + str(score), True, yellow)
-    dis.blit(value, [0, 0])
+    value = score_font.render(str(score), True, black)
+    dis.blit(value, [0, dis_height-10])
  
  
  
@@ -119,7 +123,7 @@ def make_array(snake_List, foodx, foody):
                     
 
 
-from feed_forward_neural_network import *
+
 
 ##def run_game_with_ML(weights):
 ##    max_score = 0
@@ -183,6 +187,8 @@ from feed_forward_neural_network import *
 def run_game_with_ML(weights):
     game_close = False
     steps_taken = 0
+
+    
     
     x1 = dis_width / 2
     y1 = dis_height / 2
@@ -201,7 +207,7 @@ def run_game_with_ML(weights):
     count_same_direction = 0
     
     score1 = 0
-    steps_per_game = 2500
+    steps_per_game = 100
     score2 = 0
     while not game_close:
         action = np.argmax(np.array(forward_propagation(np.array(make_array(snake_List, foodx, foody)).reshape(-1, 6), weights)))
@@ -227,7 +233,8 @@ def run_game_with_ML(weights):
         y1_old = y1
         x1 += x1_change
         y1 += y1_change
-        dis.fill(blue)
+        dis.fill(blue, rect=[0, 0, dis_width, dis_height])
+        dis.fill(tangerine, rect=[0, dis_height, dis_width, dis_height_complete - dis_height])
         pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
         snake_Head = []
         snake_Head.append(x1)
@@ -256,17 +263,17 @@ def run_game_with_ML(weights):
         
         our_snake(snake_block, snake_List)
         Your_score(Length_of_snake - 1)
- 
+        
         pygame.display.update()
         if x1 == foodx and y1 == foody: 
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
         
-        
+        steps_taken += 1
         clock.tick(snake_speed)
         if steps_taken >= steps_per_game:
             game_close = True
-            
+        print(steps_taken)
     return score1 + score2 + Length_of_snake * 5000
     
