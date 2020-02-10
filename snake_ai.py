@@ -17,8 +17,8 @@ green = (0, 255, 0)
 blue = (50, 153, 213)
 tangerine = (255, 153, 102)
  
-dis_width = 100
-dis_height = 100
+dis_width = 200
+dis_height = 200
 
 dis_height_complete = dis_height + 30
  
@@ -216,7 +216,7 @@ def run_game_with_ML(weights):
     count_same_direction = 0
     
     score1 = 0
-    steps_per_game = 100
+    steps_per_game = 200
     score2 = 0
     while not game_close:
         input_layer = make_array(snake_List, foodx, foody)
@@ -237,7 +237,7 @@ def run_game_with_ML(weights):
         
         
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            score1 -= 200
+            score1 -= 400
             game_close = True
         x1_old = x1
         y1_old = y1
@@ -253,7 +253,7 @@ def run_game_with_ML(weights):
 
         for x in snake_List[:-1]:
             if x == snake_Head:
-                score1 -= 200
+                score1 -= 400
                 game_close = True
         score1 -= 1       
         if len(snake_List) > Length_of_snake:
@@ -285,6 +285,6 @@ def run_game_with_ML(weights):
         clock.tick(snake_speed)
         if steps_taken >= steps_per_game * Length_of_snake:
             game_close = True
-
+        
     return score1 + score2 + Length_of_snake * 5000
     
