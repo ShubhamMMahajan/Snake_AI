@@ -1,7 +1,7 @@
 # Snake AI  
 
 ## Demo
-This program takes up a lot of CPU power. To run the trained AI, simply download this git repository and run demo.py. Make sure you dont exit out of the pygame or else the program will crash due to the number of operations occuring in a short amount of time.
+This program takes up a lot of CPU power. To run the trained AI, simply download this git repository and run demo.py. Make sure you dont exit out of the pygame or else the GUI will crash due to the number of operations occuring in a short amount of time. Even if the GUI crashes, the program is still running and you will see the score displayed on the console.
 
 ## Deep Q Learning  
 My first attempt to create a snake AI was by using deep q learning. Unfortunately, this method did not work. While the snake was trained to go to the appropriate X coordinate or the appropriate Y coordinate it could never learn them both. I tried to change my hyper-parameters by adjusting the learning rate or the discount rate. This cause the neural network to converge to one output regardless of what input I gave. I still have the deep q learning code in snake_ai_DQN.py and dqn_agent.py if you want to take a look at that.  
