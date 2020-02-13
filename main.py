@@ -1,6 +1,5 @@
 from genetic_algorithm import *
 import csv
-#from Snake_Game import *
 
 # n_x -> no. of input units
 # n_h -> no. of units in hidden layer 1
@@ -25,6 +24,7 @@ num_generations = 100
 
 num_parents_mating = 12
 
+#record the weights, score, and generation number for each snake
 def write_to_csv(weights, fitness, generation):
     with open("weights.csv", "a+", newline = '') as fp:
         wr = csv.writer(fp, dialect='excel')
@@ -32,13 +32,16 @@ def write_to_csv(weights, fitness, generation):
             entry = [generation, fitness[i]] + list(weights[i])
             wr.writerow(entry)
     fp.close()
+    
 for generation in range(num_generations):
     print('##############        GENERATION ' + str(generation)+ '  ###############' )
+
     # Measuring the fitness of each chromosome in the population.
     fitness = cal_pop_fitness(new_population)
     write_to_csv(new_population, list(fitness), generation)
     print('#######  fittest chromosome in generation ' + str(generation) +' is having fitness value:  ', np.max(fitness))
     print('#######  average chromosome in generation ' + str(generation) +' is having fitness value:  ', np.mean(fitness))
+
     # Selecting the best parents in the population for mating.
     parents = select_mating_pool(new_population, fitness, num_parents_mating)
 

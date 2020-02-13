@@ -28,72 +28,29 @@ pygame.display.set_caption('Snake Game by Edureka')
 clock = pygame.time.Clock()
  
 snake_block = 10
-snake_speed = 20
+snake_speed = 15
  
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
  
- 
+#Score display 
 def Your_score(score):
     value = score_font.render(str(score), True, black)
     dis.blit(value, [0, dis_height-10])
  
  
- 
+#Draws the snake 
 def our_snake(snake_block, snake_list):
     for x in snake_list:
         pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
  
- 
-def message(msg, color):
-    mesg = font_style.render(msg, True, color)
-    dis.blit(mesg, [dis_width / 6, dis_height / 3])
- 
+#makes the input layer for neural network
 def make_array(snake_List, foodx, foody):
-    # 0 indicates empty space, 1 indicates snakes body, 2 indicates food
-    #np_snake_array = np.array(snake_List)
     snake_Head = list(map(int, snake_List[-1]))
     input_layer = []
-##    if snake_Head[0] > foodx:
-##        input_layer.append(0)
-##    elif snake_Head[0] < foodx:
-##        input_layer.append(1)
-##    else:
-##        input_layer.append(2)
-##
-##    if snake_Head[1] > foody:
-##        input_layer.append(0)
-##    elif snake_Head[1] < foody:
-##        input_layer.append(1)
-##    else:
-##        input_layer.append(2)
-##    input_layer.append(foodx-snake_Head[0])
-##    input_layer.append(foody-snake_Head[1])
-##    if snake_Head[0] > foodx: #food is left of the snake
-##        input_layer.append(1 if foody < snake_Head[1] else 0)
-##        input_layer.append(1 if foody == snake_Head[1] else 0)
-##        input_layer.append(1 if foody > snake_Head[1] else 0)
-##    else:
-##        input_layer.append(0)
-##        input_layer.append(0)
-##        input_layer.append(0)
-##        
-##    if snake_Head[0] == foodx: 
-##        input_layer.append(1 if foody < snake_Head[1] else 0)
-##        input_layer.append(1 if foody > snake_Head[1] else 0)
-##    else:
-##        input_layer.append(0)
-##        input_layer.append(0)
-##    
-##    if snake_Head[0] < foodx:
-##        input_layer.append(1 if foody < snake_Head[1] else 0)
-##        input_layer.append(1 if foody == snake_Head[1] else 0)
-##        input_layer.append(1 if foody > snake_Head[1] else 0)
-##    else:
-##        input_layer.append(0)
-##        input_layer.append(0)
-##        input_layer.append(0)
-    
+
+    #record if there is any danger to the left, right, above, or below the snake
+    #can only view 1 block away from head
     for x in range(snake_Head[0] - 10, snake_Head[0] + 20, 10):
         for y in range(snake_Head[1] - 10, snake_Head[1] + 20, 10):
             if [x,y] == snake_Head:
@@ -105,6 +62,8 @@ def make_array(snake_List, foodx, foody):
                 input_layer.append(0)
             else:
                 input_layer.append(1)
+
+    #sees where the apple is relative to snakes head in the x coordinate
     if snake_Head[0] > foodx:
         input_layer.append(-1)
     elif snake_Head[0] < foodx:
@@ -112,6 +71,7 @@ def make_array(snake_List, foodx, foody):
     else:
         input_layer.append(0)
 
+    #sees where the apple is relative to snakes head in the y coordinate
     if snake_Head[1] > foody:
         input_layer.append(-1)
     elif snake_Head[1] < foody:
@@ -121,69 +81,8 @@ def make_array(snake_List, foodx, foody):
     
     return input_layer
                     
-
-
-
-
-##def run_game_with_ML(weights):
-##    max_score = 0
-##    avg_score = 0
-##    test_games = 1
-##    score1 = 0
-##    steps_per_game = 2500
-##    score2 = 0
-##    directions = ["left", "right", "up", "down"]
-##    
-##    for _ in range(test_games):
-##        snake_start, snake_position, apple_position, score = starting_positions()
-##
-##        count_same_direction = 0
-##        prev_direction = 0
-##
-##        for _ in range(steps_per_game):
-##            predictions = []
-##            predicted_direction = np.argmax(np.array(forward_propagation(np.array(
-##                make_array(snake_list, foodx, foody).reshape(-1, 7), weights)))
-##            print("predicted_direction:", predicted_direction)
-##            
-####            if predicted_direction == prev_direction:
-####                count_same_direction += 1
-####            else:
-####                count_same_direction = 0
-####                prev_direction = predicted_direction
-####
-####            new_direction = np.array(snake_position[0]) - np.array(snake_position[1])
-####            if predicted_direction == -1:
-####                new_direction = np.array([new_direction[1], -new_direction[0]])
-####            if predicted_direction == 1:
-####                new_direction = np.array([-new_direction[1], new_direction[0]])
-####
-####            button_direction = generate_button_direction(new_direction)
-####
-####            next_step = snake_position[0] + current_direction_vector
-##            next_step = directions[predicted_direction]
-##            if collision_with_boundaries(snake_position[0]) == 1 or collision_with_self(next_step.tolist(),
-##                                                                                        snake_position) == 1:
-##                score1 += -150
-##                break
-##
-##            else:
-##                score1 += 0
-##
-##            snake_position, apple_position, score = play_game(snake_start, snake_position, apple_position,
-##                                                              button_direction, score, display, clock)
-##
-##            if score > max_score:
-##                max_score = score
-##
-##            if count_same_direction > 8 and predicted_direction != 0:
-##                score2 -= 1
-##            else:
-##                score2 += 2
-##
-##
-##    return score1 + score2 + max_score * 5000
-
+#checks to see if the snake turned to the opposite direction from where it
+#was going.
 def opposite_direction(prev_direction, current_direction):
     if (prev_direction == "left" and current_direction == "right") or \
        (prev_direction == "right" and current_direction == "left"):
@@ -198,7 +97,7 @@ def run_game_with_ML(weights):
     steps_taken = 0
 
     
-    
+    #start the snake in the middle of the board
     x1 = int(dis_width / 2)
     y1 = int(dis_height / 2)
  
@@ -208,18 +107,22 @@ def run_game_with_ML(weights):
     
     snake_List = [[x1, y1]]
     Length_of_snake = 1
-    
+
+    #place the apple at a random location
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
     prev_direction = ""
     count_same_direction = 0
+
     
-    score1 = 0
+    score1 = 0 #penalized for every step taken or if the snake dies
     steps_per_game = 200
-    score2 = 0
+    score2 = 0 #rewarded if the snake move in the same direction
     while not game_close:
         input_layer = make_array(snake_List, foodx, foody)
+
+        #calculate and take the best action based upon our neural network
         action = np.argmax(np.array(forward_propagation(np.array(input_layer).reshape(-1, 6), weights)))
         if directions[action]== "left":
             x1_change = -snake_block
@@ -235,10 +138,12 @@ def run_game_with_ML(weights):
             x1_change = 0
 
         
-        
+        #the snake hit the boundry
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             score1 -= 400
             game_close = True
+
+        #update the board if the snake is still alive
         x1_old = x1
         y1_old = y1
         x1 += x1_change
@@ -251,14 +156,18 @@ def run_game_with_ML(weights):
         snake_Head.append(y1)
         snake_List.append(snake_Head)
 
+        #if the snake collided with its own body
         for x in snake_List[:-1]:
             if x == snake_Head:
                 score1 -= 400
                 game_close = True
-        score1 -= 1       
+        score1 -= 1  #lose 1 point for every step taken
+
+        #delete the tail of the snake after we update the snakes head location
         if len(snake_List) > Length_of_snake:
             del snake_List[0]
- 
+
+        #make sure the snakes movements are consistent 
         if (count_same_direction > 4 and prev_direction != directions[action]) or \
             opposite_direction(prev_direction, directions[action]):
             score2 -= 1
@@ -276,6 +185,8 @@ def run_game_with_ML(weights):
         Your_score(Length_of_snake - 1)
         
         pygame.display.update()
+        
+        #the snake ate the apple
         if x1 == foodx and y1 == foody: 
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
@@ -283,6 +194,9 @@ def run_game_with_ML(weights):
         
         steps_taken += 1
         clock.tick(snake_speed)
+
+        #if the snake does not find an apple in a given amount of steps
+        #end the game
         if steps_taken >= steps_per_game * Length_of_snake:
             game_close = True
         

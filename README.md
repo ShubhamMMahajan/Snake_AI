@@ -1,4 +1,4 @@
-# Snake_AI  
+# Snake AI  
 ## Deep Q Learning  
 My first attempt to create a snake AI was by using deep q learning. Unfortunately, this method did not work. While the snake was trained to go to the appropriate X coordinate or the appropriate Y coordinate it could never learn them both. I tried to change my hyper-parameters by adjusting the learning rate or the discount rate. This cause the neural network to converge to one output regardless of what input I gave. I still have the deep q learning code in snake_ai_DQN.py and dqn_agent.py if you want to take a look at that.  
 

@@ -1,13 +1,18 @@
 import numpy as np
 from numba import jit
+
+#number of nodes per layer
 n_x = 6
 n_h = 9
 n_h2 = 15
 n_y = 4
+
+#used to determine number of weights from one layer to the next
 W1_shape = (9,6)
 W2_shape = (15,9)
 W3_shape = (4,15)
 
+#code is compiled using numba to increase computation speed
 @jit(nopython=True, fastmath=True)
 def get_weights_from_encoded(individual):
     W1 = individual[0:W1_shape[0] * W1_shape[1]]
