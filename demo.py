@@ -27,6 +27,6 @@ def get_weight():
 #create 50 snakes using the weights with the highest score
 population = np.array([get_weight()] * runs)
 
-print(new_population.shape, type(new_population))
+
 for game in range(runs):
     fitness = cal_pop_fitness(population)

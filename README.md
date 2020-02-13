@@ -1,4 +1,8 @@
 # Snake AI  
+
+## Demo
+This program takes up a lot of CPU power. To run the trained AI, simply download this git repository and run demo.py. Make sure you dont exit out of the pygame or else the program will crash due to the number of operations occuring in a short amount of time.
+
 ## Deep Q Learning  
 My first attempt to create a snake AI was by using deep q learning. Unfortunately, this method did not work. While the snake was trained to go to the appropriate X coordinate or the appropriate Y coordinate it could never learn them both. I tried to change my hyper-parameters by adjusting the learning rate or the discount rate. This cause the neural network to converge to one output regardless of what input I gave. I still have the deep q learning code in snake_ai_DQN.py and dqn_agent.py if you want to take a look at that.  
 
@@ -17,3 +21,6 @@ A visual representation of how each generation of snakes perform. As you can see
 
 This diagram illustrates how our neural network is structured. As we can see, the neural network takes 6 inputs. The first 4 nodes are binary to tell us whether or not the snake will die if it makes one step in that direction. The last 2 nodes tell us where the apple is relative to the snake. The values can be either -1, 0, or 1. A value of -1 indicates the apple is to the left or above the snakes head depending on the node. A value of 0 indicates that the snakes head is at the right x or y coordinate of the apple. A value of 1 indicates the apple is to the right or below the snakes head depending on the node. The outputs are straightforward. We have 4 outputs each one representing the direction the snake can go.  
 <img src="images/nn_final.PNG" height="600" width="800">  
+
+### Results
+On average our trained snake eats between 25 to 35 apples in 1 game. Sometimes, it can even eat over 45 apples.  
